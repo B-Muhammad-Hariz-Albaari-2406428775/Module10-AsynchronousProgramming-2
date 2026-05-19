@@ -38,3 +38,31 @@ cargo run --bin client :
 ## Terminal 3
 cargo run --bin client :
 ![alt text](image-2.png)
+
+
+# Experiment 2.2: Modifying the Websocket Port
+
+**Penjelasan Modifikasi:**
+Eksperimen ini bertujuan untuk mengubah port komunikasi *websocket* dari port bawaan `2000` menjadi port `8080`. 
+
+Karena komunikasi *websocket* merupakan koneksi dua arah (membutuhkan *handshake* antara *client* dan *server*), perubahan port wajib dilakukan di kedua sisi aplikasi agar mereka bisa saling berkomunikasi:
+
+1. **Sisi Server (`src/bin/server.rs`):** Saya mengubah alamat *binding* pada `TcpListener` menjadi `127.0.0.1:8080`. Ini memberitahu *server* untuk membuka port 8080 dan mendengarkan koneksi masuk di sana.
+
+2. **Sisi Client (`src/bin/client.rs`):** Saya mengubah URI target pada `ClientBuilder` menjadi `ws://127.0.0.1:8080`. Ini menginstruksikan *client* untuk menargetkan koneksi ke port 8080 menggunakan protokol `ws` (Websocket).
+
+**Hasil:**
+Setelah kedua file dimodifikasi dan dikompilasi ulang, *server* berhasil berjalan di port 8080 dan *client* dapat terhubung serta melakukan *broadcast chat* tanpa masalah, membuktikan bahwa penyesuaian port di kedua sisi telah sinkron.
+
+**Screenshot Hasil Eksekusi:**
+## Terminal 1
+cargo run --bin server :
+![alt text](image-3.png)
+
+## Terminal 2
+cargo run --bin client :
+![alt text](image-4.png)
+
+## Terminal 3
+cargo run --bin client :
+![alt text](image-5.png)
