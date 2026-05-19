@@ -78,12 +78,14 @@ Perubahan dilakukan di dalam file `src/bin/server.rs` pada fungsi `handle_connec
 if let Some(text) = msg.as_text() {
     let _ = bcast_tx.send(text.to_string());
 }
+```
 Menjadi format string baru yang menyisipkan variabel addr:
 
-Rust
+```rust
 if let Some(text) = msg.as_text() {
     let _ = bcast_tx.send(format!("{}: {}", addr, text));
 }
+```
 
 Mengapa Modifikasi Dilakukan di Sisi Server?
 Modifikasi sengaja diletakkan di sisi server (dalam fungsi handle_connection) karena beberapa alasan arsitektural:
