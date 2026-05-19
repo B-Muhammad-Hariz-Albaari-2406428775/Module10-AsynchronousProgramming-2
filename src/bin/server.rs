@@ -19,7 +19,7 @@ async fn handle_connection(
                 match incoming {
                     Some(Ok(msg)) => {
                         if let Some(text) = msg.as_text() {
-                            let _ = bcast_tx.send(text.to_string());
+                            let _ = bcast_tx.send(format!("{}: {}", addr, text));
                         }
                     }
                     Some(Err(e)) => {

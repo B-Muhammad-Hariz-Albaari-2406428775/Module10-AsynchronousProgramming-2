@@ -66,3 +66,45 @@ cargo run --bin client :
 ## Terminal 3
 cargo run --bin client :
 ![alt text](image-5.png)
+
+## Experiment 2.3: Small Changes, Add IP and Port
+
+**Penjelasan Modifikasi:**
+Pada eksperimen ini, aplikasi dimodifikasi agar setiap pesan yang di-*broadcast* oleh server menyertakan identitas pengirim berupa alamat IP dan nomor Port. Karena aplikasi *chat* ini belum mengimplementasikan fitur *username* (autentikasi pengguna), kombinasi IP dan Port digunakan sebagai pengenal unik sementara untuk membedakan antar-komponen *client*.
+
+**Detail Perubahan Kode:**
+Perubahan dilakukan di dalam file `src/bin/server.rs` pada fungsi `handle_connection`. Secara spesifik, bagian logika yang membaca pesan masuk dari *client* diubah dari:
+```rust
+if let Some(text) = msg.as_text() {
+    let _ = bcast_tx.send(text.to_string());
+}
+Menjadi format string baru yang menyisipkan variabel addr:
+
+Rust
+if let Some(text) = msg.as_text() {
+    let _ = bcast_tx.send(format!("{}: {}", addr, text));
+}
+
+Mengapa Modifikasi Dilakukan di Sisi Server?
+Modifikasi sengaja diletakkan di sisi server (dalam fungsi handle_connection) karena beberapa alasan arsitektural:
+
+Akses Data Alamat (SocketAddr): Server memiliki informasi lengkap mengenai koneksi mentah TCP (TcpStream) dari setiap client, termasuk alamat IP dan port asal yang di-passing melalui parameter addr. Sementara itu, sesama client tidak saling mengetahui alamat satu sama lain secara langsung karena komunikasi bersifat tersentralisasi melewati server.
+
+Prinsip Single Source of Truth: Dengan memformat string secara terpusat di server sebelum pesan disebarkan ke broadcast channel (bcast_tx), kita memastikan bahwa semua client akan menerima data identitas pengirim dengan format yang seragam tanpa perlu melakukan parsing tambahan di sisi masing-masing client.
+
+Hasil Observasi:
+Ketika server dijalankan ulang dan beberapa terminal client mengirimkan pesan, pesan yang muncul di semua layar client kini berubah format menjadi From server: 127.0.0.1:52380. Hal ini memudahkan pelacakan asal pesan secara real-time melalui konsol.
+
+**Screenshot Hasil Eksekusi:**
+## Terminal 1
+cargo run --bin server :
+![alt text](image-6.png)
+
+## Terminal 2
+cargo run --bin client :
+![alt text](image-7.png)
+
+## Terminal 3
+cargo run --bin client :
+![alt text](image-8.png)
+
